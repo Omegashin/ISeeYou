@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <PreferenceCategory android:title="Design:" >
+
+        <com.example.hellotolivewallpaper.imageview_pref_activity
+            android:key="pref_max_volume"
+            android:title="@string/max_volume" />
+
+    </PreferenceCategory>
+
+
+</PreferenceScreen>
