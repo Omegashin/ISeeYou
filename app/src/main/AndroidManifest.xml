@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.hellotolivewallpaper" >
+    package="com.example.iseeyou" >
 
     <application
         android:allowBackup="true"
@@ -8,9 +8,10 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme">
         <activity
-            android:name="com.example.hellotolivewallpaper.MainActivity"
+            android:name="com.example.iseeyou.MainActivity"
             android:label="@string/app_name"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.NoBackground">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
@@ -18,7 +19,7 @@
         </activity>
         <!-- Live Wallpaper Service -->
         <service
-            android:name="com.example.hellotolivewallpaper.HelloToLiveWallpaperService"
+            android:name=".iSeeYouWallpaperService"
             android:description="@string/wallpaper_description"
             android:enabled="true"
             android:icon="@mipmap/ic_launcher"
@@ -33,10 +34,10 @@
         </service>
 
         <activity
-            android:name="com.example.hellotolivewallpaper.LiveWallpaperServiceSettings"
+            android:name="com.example.iseeyou.LiveWallpaperServiceSettings"
             android:exported="true"
             android:label="Settings"
-            android:theme="@android:style/Theme.WallpaperSettings" >
+            android:theme="@style/AppTheme" >
         </activity>
 
     </application>

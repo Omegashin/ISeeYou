@@ -1,17 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string-array name="eye_design_entries">
-        <item>Time Dependent</item>
-        <item>Oval Navy</item>
-        <item>Red Devil</item>
-        <item>Blue Angel</item>
+    <string-array name="pos_entries">
+        <item>Center</item>
+        <item>Top</item>
     </string-array>
 
-    <string-array name="eyeDesignValues">
-        <item>0</item>
+    <string-array name="pos_values">
         <item>1</item>
         <item>2</item>
-        <item>3</item>
     </string-array>
 
 </resources>

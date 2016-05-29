@@ -1,6 +1,16 @@
 <resources>
     <string name="app_name">ICU</string>
     <string name="wallpaper_description">ICU</string>
-    <string name="max_volume">1</string>
-    <string name="balance">1</string>
+
+    <string name="position_list_title">Eye Position</string>
+    <string name="position_list_summary">Choose where the eye is placed</string>
+
+    <!--Content Descriptions-->
+    <string name="auto">Automatic</string>
+    <string name="blue_image_desc">Blue Eye</string>
+    <string name="purple_image_desc">Purple Eye</string>
+    <string name="orange_image_desc">Orange Eye</string>
+    <string name="red_image_desc">Red Eye</string>
+    <string name="Green_image_desc">Green Eye</string>
+    <string name="sharingan_image_desc">Sharingan Eye</string>
 </resources>

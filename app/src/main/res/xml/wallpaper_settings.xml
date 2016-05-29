@@ -1,13 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
 
-    <PreferenceCategory android:title="Design:" >
+    <PreferenceCategory android:title="Settings" >
 
-        <com.example.hellotolivewallpaper.imageview_pref_activity
-            android:key="pref_max_volume"
-            android:title="@string/max_volume" />
+            <ListPreference
+                android:key="positionListKey"
+                android:title="@string/position_list_title"
+                android:summary="@string/position_list_summary"
+                android:entries="@array/pos_entries"
+                android:entryValues="@array/pos_values"
+                android:defaultValue="2"/>
+
+        <Preference
+            android:title="Choose Eye Design"/>
+
+        <com.example.iseeyou.imagePrefClass
+            android:key="eyeDesignKey"
+            android:title="@string/position_list_title"
+            android:summary="@string/position_list_summary"/>
 
     </PreferenceCategory>
-
 
 </PreferenceScreen>

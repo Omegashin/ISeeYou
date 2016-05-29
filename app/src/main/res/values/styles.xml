@@ -5,4 +5,8 @@
         <item name="android:colorPrimary" tools:targetApi="21">#3F51B5</item>
     </style>
 
+    <style name="Theme.NoBackground" parent="android:Theme">
+        <item name="android:windowBackground">@null</item>
+    </style>
+
 </resources>
