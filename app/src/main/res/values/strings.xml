@@ -1,6 +1,6 @@
 <resources>
-    <string name="app_name">ICU</string>
-    <string name="wallpaper_description">ICU</string>
+    <string name="app_name">Cyclops</string>
+    <string name="wallpaper_description">Cyclops Free</string>
 
     <string name="position_list_title">Eye Position</string>
     <string name="position_list_summary">Choose where the eye is placed</string>

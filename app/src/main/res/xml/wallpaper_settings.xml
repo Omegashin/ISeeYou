@@ -14,7 +14,7 @@
         <Preference
             android:title="Choose Eye Design"/>
 
-        <com.example.iseeyou.imagePrefClass
+        <com.bdcorps.cyclops.imagePrefClass
             android:key="eyeDesignKey"
             android:title="@string/position_list_title"
             android:summary="@string/position_list_summary"/>

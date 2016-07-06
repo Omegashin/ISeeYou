@@ -1,4 +1,4 @@
-package com.example.iseeyou;
+package com.bdcorps.cyclops;
 
 import android.app.Activity;
 import android.app.WallpaperManager;

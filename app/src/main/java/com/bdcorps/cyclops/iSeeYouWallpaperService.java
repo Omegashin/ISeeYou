@@ -1,4 +1,4 @@
-package com.example.iseeyou;
+package com.bdcorps.cyclops;
 
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
@@ -137,7 +137,7 @@ public class iSeeYouWallpaperService extends BaseLiveWallpaperService implements
                 iris_asset_name = "gfx/iris_std.png";
             } else if (time.hour >= 9 && time.hour <= 12) {
                 eye_asset_name = "gfx/green.png";
-                iris_asset_name = "gfx/iris_green.png";
+                iris_asset_name = "gfx/iris_std.png";
             } else if (time.hour >= 13 && time.hour <= 16) {
                 eye_asset_name = "gfx/purple.png";
                 iris_asset_name = "gfx/iris_std.png";
@@ -160,7 +160,7 @@ public class iSeeYouWallpaperService extends BaseLiveWallpaperService implements
                     iris_asset_name = "gfx/iris_std.png"; break;
                 case "mike":
                     eye_asset_name = "gfx/green.png";
-                    iris_asset_name = "gfx/iris_green.png"; break;
+                    iris_asset_name = "gfx/iris_std.png"; break;
                 case "purple":
                     eye_asset_name = "gfx/purple.png";
                     iris_asset_name = "gfx/iris_std.png"; break;
@@ -273,7 +273,7 @@ public class iSeeYouWallpaperService extends BaseLiveWallpaperService implements
             iris_asset_name = "gfx/iris_std.png";
         } else if (time.hour >= 9 && time.hour <= 12) {
             eye_asset_name = "gfx/green.png";
-            iris_asset_name = "gfx/iris_green.png";
+            iris_asset_name = "gfx/iris_std.png";
         } else if (time.hour >= 13 && time.hour <= 16) {
             eye_asset_name = "gfx/purple.png";
             iris_asset_name = "gfx/iris_std.png";
@@ -292,12 +292,12 @@ public class iSeeYouWallpaperService extends BaseLiveWallpaperService implements
             case "blue":
                 eye_asset_name = "gfx/blue.png";
                 iris_asset_name = "gfx/iris_std.png"; break;
-            case "yellow":
+            case "orange":
                 eye_asset_name = "gfx/orange.png";
                 iris_asset_name = "gfx/iris_std.png"; break;
-            case "mike":
+            case "green":
                 eye_asset_name = "gfx/green.png";
-                iris_asset_name = "gfx/iris_green.png"; break;
+                iris_asset_name = "gfx/iris_std.png"; break;
             case "purple":
                 eye_asset_name = "gfx/purple.png";
                 iris_asset_name = "gfx/iris_std.png"; break;
@@ -357,6 +357,8 @@ public class iSeeYouWallpaperService extends BaseLiveWallpaperService implements
 
         time.setToNow();
 
+        Log.e(TAG, "setAssetWithTime: "+time.hour );
+
         if (time.hour >= 1 && time.hour <= 4) {
             mEyeTexture = BitmapTextureAtlasTextureRegionFactory.createFromAsset(textureAtlas, getAssets(), "gfx/blue.png", 0, 0);
             mIrisTexture = BitmapTextureAtlasTextureRegionFactory.createFromAsset(textureAtlasIris, getAssets(), "gfx/iris_std.png", 0, 0);
@@ -365,7 +367,7 @@ public class iSeeYouWallpaperService extends BaseLiveWallpaperService implements
             mIrisTexture = BitmapTextureAtlasTextureRegionFactory.createFromAsset(textureAtlasIris, getAssets(), "gfx/iris_std.png", 0, 0);
         } else if (time.hour >=9 && time.hour <= 12) {
             mEyeTexture = BitmapTextureAtlasTextureRegionFactory.createFromAsset(textureAtlas, getAssets(), "gfx/green.png", 0, 0);
-            mIrisTexture = BitmapTextureAtlasTextureRegionFactory.createFromAsset(textureAtlasIris, getAssets(), "gfx/iris_green.png", 0, 0);
+            mIrisTexture = BitmapTextureAtlasTextureRegionFactory.createFromAsset(textureAtlasIris, getAssets(), "gfx/iris_std.png", 0, 0);
         }  else if (time.hour >= 13 && time.hour <= 16) {
             mEyeTexture = BitmapTextureAtlasTextureRegionFactory.createFromAsset(textureAtlas, getAssets(), "gfx/purple.png", 0, 0);
             mIrisTexture = BitmapTextureAtlasTextureRegionFactory.createFromAsset(textureAtlasIris, getAssets(), "gfx/iris_std.png", 0, 0);

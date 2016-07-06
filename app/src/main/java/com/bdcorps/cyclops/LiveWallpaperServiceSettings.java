@@ -1,4 +1,4 @@
-package com.example.iseeyou;
+package com.bdcorps.cyclops;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -47,6 +47,7 @@ public class LiveWallpaperServiceSettings extends PreferenceActivity
         String design_pref = sharedPreferences.getString("eye_design_pref", "Automatic");
 
         if (!design_pref.equals("Automatic")) {
+
             iSeeYouWallpaperService.setAssetNameWithPref(design_pref);
             iSeeYouWallpaperService.isManualSet=false;
         }
