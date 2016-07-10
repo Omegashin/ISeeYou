@@ -20,7 +20,7 @@ public class MainActivity extends Activity
         // try the new Jelly Bean direct android wallpaper chooser first
         try
         {
-            ComponentName component = new ComponentName(getPackageName(), getPackageName() + ".iSeeYouWallpaperService");
+            ComponentName component = new ComponentName(getPackageName(), getPackageName() + ".CyclopsWallpaperService");
             intent = new Intent(WallpaperManager.ACTION_CHANGE_LIVE_WALLPAPER);
             intent.putExtra(WallpaperManager.EXTRA_LIVE_WALLPAPER_COMPONENT, component);
             startActivity(intent);

@@ -10,7 +10,6 @@
         <activity
             android:name="com.bdcorps.cyclops.MainActivity"
             android:label="@string/app_name"
-            android:screenOrientation="portrait"
             android:theme="@style/Theme.NoBackground">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
@@ -19,7 +18,7 @@
         </activity>
         <!-- Live Wallpaper Service -->
         <service
-            android:name="com.bdcorps.cyclops.iSeeYouWallpaperService"
+            android:name=".CyclopsWallpaperService"
             android:description="@string/wallpaper_description"
             android:enabled="true"
             android:icon="@mipmap/ic_launcher"

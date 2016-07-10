@@ -48,8 +48,8 @@ public class LiveWallpaperServiceSettings extends PreferenceActivity
 
         if (!design_pref.equals("Automatic")) {
 
-            iSeeYouWallpaperService.setAssetNameWithPref(design_pref);
-            iSeeYouWallpaperService.isManualSet=false;
+            CyclopsWallpaperService.setAssetNameWithPref(design_pref);
+            CyclopsWallpaperService.isManualSet=false;
         }
 
         LinearLayout linearLayout=(LinearLayout) findViewById(R.id.root);

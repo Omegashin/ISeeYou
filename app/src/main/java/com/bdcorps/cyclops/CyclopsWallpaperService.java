@@ -1,21 +1,27 @@
 package com.bdcorps.cyclops;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.os.Build;
 import android.preference.PreferenceManager;
 import android.text.format.Time;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Display;
 import android.view.KeyCharacterMap;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.ViewConfiguration;
 import android.view.WindowManager;
+
 import org.andengine.engine.camera.Camera;
+import org.andengine.engine.camera.ZoomCamera;
 import org.andengine.engine.handler.IUpdateHandler;
 import org.andengine.engine.options.EngineOptions;
 import org.andengine.engine.options.ScreenOrientation;
+import org.andengine.engine.options.resolutionpolicy.FillResolutionPolicy;
 import org.andengine.engine.options.resolutionpolicy.RatioResolutionPolicy;
 import org.andengine.entity.scene.IOnSceneTouchListener;
 import org.andengine.entity.scene.Scene;
@@ -31,27 +37,74 @@ import org.andengine.opengl.view.IRendererListener;
 
 import java.io.IOException;
 
-public class iSeeYouWallpaperService extends BaseLiveWallpaperService implements IOnSceneTouchListener {
-    private static final String TAG = "HelloTo";
-
-    private static float CAMERA_WIDTH = 1300;
-    private static float CAMERA_HEIGHT = 600;
+public class CyclopsWallpaperService extends BaseLiveWallpaperService implements IOnSceneTouchListener {
+    private static final String TAG = "LogTag";
+    public static boolean isManualSet = false;
+    static String eye_asset_name = "gfx/blue.png";
+    static String iris_asset_name = "gfx/iris_std.png";
+    private static float CAMERA_WIDTH = 1080;
+    private static float CAMERA_HEIGHT = 1920;
     public SharedPreferences mPrefs = null;
-
+    PreferenceChangeListener mPreferenceListener;
+    Camera mCamera;
+    Time time;
+    BitmapTextureAtlas textureAtlas;
+    BitmapTextureAtlas textureAtlasIris;
+    DisplayMetrics displayMetrics;
+    int orient;
+    float x, y;
+    float w, h;
+    Display display;
     private Scene mScene;
     private TextureRegion mEyeTexture;
     private Sprite mEyeSprite;
     private TextureRegion mIrisTexture;
     private Sprite mIrisSprite;
-    static String eye_asset_name = "gfx/blue.png";
-    static String iris_asset_name = "gfx/iris_std.png";
-    Time time;
-    BitmapTextureAtlas textureAtlas;
-    BitmapTextureAtlas textureAtlasIris;
-    DisplayMetrics displayMetrics;
-    int orient = 0;
-    float x, y;
-    public static boolean isManualSet = false;
+
+    static public void setAssetNameWithPref(String design_pref) {
+
+        switch (design_pref.toLowerCase()) {
+            case "blue":
+                eye_asset_name = "gfx/blue.png";
+                iris_asset_name = "gfx/iris_std.png";
+                break;
+            case "orange":
+                eye_asset_name = "gfx/orange.png";
+                iris_asset_name = "gfx/iris_std.png";
+                break;
+            case "green":
+                eye_asset_name = "gfx/green.png";
+                iris_asset_name = "gfx/iris_std.png";
+                break;
+            case "purple":
+                eye_asset_name = "gfx/purple.png";
+                iris_asset_name = "gfx/iris_std.png";
+                break;
+            case "red":
+                eye_asset_name = "gfx/red.png";
+                iris_asset_name = "gfx/iris_red.png";
+                break;
+            case "sharingan":
+                eye_asset_name = "gfx/sharingan.png";
+                iris_asset_name = "gfx/iris_shari.png";
+                break;
+        }
+    }
+
+    public static boolean isTablet(Context context) {
+        return (context.getResources().getConfiguration().screenLayout
+                & Configuration.SCREENLAYOUT_SIZE_MASK)
+                >= Configuration.SCREENLAYOUT_SIZE_LARGE;
+    }
+
+    public void loadOrientation() {
+        displayMetrics = new DisplayMetrics();
+        WindowManager wm = (WindowManager) getSystemService(WINDOW_SERVICE);
+        wm.getDefaultDisplay().getMetrics(displayMetrics);
+        wm.getDefaultDisplay().getRotation();
+        w = displayMetrics.widthPixels;
+        h = displayMetrics.heightPixels + getnav();
+    }
 
     @Override
     public EngineOptions onCreateEngineOptions() {
@@ -59,45 +112,26 @@ public class iSeeYouWallpaperService extends BaseLiveWallpaperService implements
             time = new Time();
             //Set Preference Change Listener
             mPrefs = PreferenceManager.getDefaultSharedPreferences(this);
-            PreferenceChangeListener mPreferenceListener = new PreferenceChangeListener();
+            mPreferenceListener = new PreferenceChangeListener();
             mPrefs.registerOnSharedPreferenceChangeListener(mPreferenceListener);
-
-            displayMetrics = new DisplayMetrics();
-            WindowManager wm = (WindowManager) getSystemService(WINDOW_SERVICE);
-            wm.getDefaultDisplay().getMetrics(displayMetrics);
-            wm.getDefaultDisplay().getRotation();
-            CAMERA_WIDTH = displayMetrics.widthPixels;
-            CAMERA_HEIGHT = displayMetrics.heightPixels;
-            CAMERA_HEIGHT = displayMetrics.heightPixels + getnav();
         } catch (Exception e) {
             Log.e(TAG, "onCreateEngineOptions " + e.toString());
         }
+        ZoomCamera zoomCamera = new ZoomCamera(0, 0, CAMERA_WIDTH, CAMERA_HEIGHT);
+        EngineOptions engineOptions = new EngineOptions(
+                true,
+                ScreenOrientation.PORTRAIT_SENSOR,
+                new RatioResolutionPolicy(w, h),
+                zoomCamera);
 
-        //create a camera
-        Camera mCamera = new Camera(0, 0, CAMERA_WIDTH, CAMERA_HEIGHT);
-
-        EngineOptions engineOptions = new EngineOptions(true, ScreenOrientation.PORTRAIT_SENSOR, new RatioResolutionPolicy(CAMERA_WIDTH, CAMERA_HEIGHT), mCamera);
+        zoomCamera.setResizeOnSurfaceSizeChanged(true);
         engineOptions.getRenderOptions().setDithering(true);
-
-        //engine options
-        return new EngineOptions(true, ScreenOrientation.PORTRAIT_SENSOR, new RatioResolutionPolicy(CAMERA_WIDTH, CAMERA_HEIGHT), mCamera);
+        return engineOptions;
     }
 
     @Override
     public Engine onCreateEngine() {
         return new LiveWallpaperEngine(this);
-    }
-
-    public class LiveWallpaperEngine extends BaseWallpaperGLEngine {
-
-        public LiveWallpaperEngine(IRendererListener pRendererListener) {
-            super(pRendererListener);
-        }
-
-        @Override
-        public void onTouchEvent(MotionEvent event) {
-            mEngine.onTouch(null, MotionEvent.obtain(event));
-        }
     }
 
     int getnav() {
@@ -148,28 +182,32 @@ public class iSeeYouWallpaperService extends BaseLiveWallpaperService implements
                 eye_asset_name = "gfx/sharingan.png";
                 iris_asset_name = "gfx/iris_shari.png";
             }
-        }
-
-        else{
+        } else {
             switch (design_pref.toLowerCase()) {
                 case "blue":
                     eye_asset_name = "gfx/blue.png";
-                    iris_asset_name = "gfx/iris_std.png"; break;
+                    iris_asset_name = "gfx/iris_std.png";
+                    break;
                 case "yellow":
                     eye_asset_name = "gfx/orange.png";
-                    iris_asset_name = "gfx/iris_std.png"; break;
+                    iris_asset_name = "gfx/iris_std.png";
+                    break;
                 case "mike":
                     eye_asset_name = "gfx/green.png";
-                    iris_asset_name = "gfx/iris_std.png"; break;
+                    iris_asset_name = "gfx/iris_std.png";
+                    break;
                 case "purple":
                     eye_asset_name = "gfx/purple.png";
-                    iris_asset_name = "gfx/iris_std.png"; break;
+                    iris_asset_name = "gfx/iris_std.png";
+                    break;
                 case "red":
                     eye_asset_name = "gfx/red.png";
-                    iris_asset_name = "gfx/iris_red.png";break;
+                    iris_asset_name = "gfx/iris_red.png";
+                    break;
                 case "sharingan":
                     eye_asset_name = "gfx/sharingan.png";
-                    iris_asset_name = "gfx/iris_shari.png";break;
+                    iris_asset_name = "gfx/iris_shari.png";
+                    break;
             }
         }
         //create texture
@@ -180,6 +218,9 @@ public class iSeeYouWallpaperService extends BaseLiveWallpaperService implements
         textureAtlasIris = new BitmapTextureAtlas(this.getTextureManager(), 200, 200, TextureOptions.BILINEAR);
         mIrisTexture = BitmapTextureAtlasTextureRegionFactory.createFromAsset(textureAtlasIris, this, iris_asset_name, 0, 0);
         textureAtlasIris.load();
+
+
+        loadOrientation();
 
         pOnCreateResourcesCallback.onCreateResourcesFinished();
     }
@@ -205,6 +246,11 @@ public class iSeeYouWallpaperService extends BaseLiveWallpaperService implements
                     setAssetNameWithTime();
                     setBackgroundWithTime();
 
+                    if (isTablet(getBaseContext())) {
+                        mEyeSprite.setSize(960, 960);
+                        mIrisSprite.setSize(75, 75);
+                    }
+
                     if (!eye_asset_name.equals(temp)) {
                         setAssetWithTime();
 
@@ -215,6 +261,7 @@ public class iSeeYouWallpaperService extends BaseLiveWallpaperService implements
                         setAssetNameWithPref(design_pref);
                         setAssetWithPref(design_pref);
                         setBackgroundWithPref(design_pref);
+
                         isManualSet = true;
 
                     }
@@ -286,30 +333,6 @@ public class iSeeYouWallpaperService extends BaseLiveWallpaperService implements
         }
     }
 
-    static public void setAssetNameWithPref(String design_pref) {
-
-        switch (design_pref.toLowerCase()) {
-            case "blue":
-                eye_asset_name = "gfx/blue.png";
-                iris_asset_name = "gfx/iris_std.png"; break;
-            case "orange":
-                eye_asset_name = "gfx/orange.png";
-                iris_asset_name = "gfx/iris_std.png"; break;
-            case "green":
-                eye_asset_name = "gfx/green.png";
-                iris_asset_name = "gfx/iris_std.png"; break;
-            case "purple":
-                eye_asset_name = "gfx/purple.png";
-                iris_asset_name = "gfx/iris_std.png"; break;
-            case "red":
-                eye_asset_name = "gfx/red.png";
-                iris_asset_name = "gfx/iris_red.png";break;
-            case "sharingan":
-                eye_asset_name = "gfx/sharingan.png";
-                iris_asset_name = "gfx/iris_shari.png";break;
-            }
-        }
-
     public void setBackgroundWithTime() {
 
         time.setToNow();
@@ -357,18 +380,16 @@ public class iSeeYouWallpaperService extends BaseLiveWallpaperService implements
 
         time.setToNow();
 
-        Log.e(TAG, "setAssetWithTime: "+time.hour );
-
         if (time.hour >= 1 && time.hour <= 4) {
             mEyeTexture = BitmapTextureAtlasTextureRegionFactory.createFromAsset(textureAtlas, getAssets(), "gfx/blue.png", 0, 0);
             mIrisTexture = BitmapTextureAtlasTextureRegionFactory.createFromAsset(textureAtlasIris, getAssets(), "gfx/iris_std.png", 0, 0);
         } else if (time.hour >= 5 && time.hour <= 8) {
             mEyeTexture = BitmapTextureAtlasTextureRegionFactory.createFromAsset(textureAtlas, getAssets(), "gfx/orange.png", 0, 0);
             mIrisTexture = BitmapTextureAtlasTextureRegionFactory.createFromAsset(textureAtlasIris, getAssets(), "gfx/iris_std.png", 0, 0);
-        } else if (time.hour >=9 && time.hour <= 12) {
+        } else if (time.hour >= 9 && time.hour <= 12) {
             mEyeTexture = BitmapTextureAtlasTextureRegionFactory.createFromAsset(textureAtlas, getAssets(), "gfx/green.png", 0, 0);
             mIrisTexture = BitmapTextureAtlasTextureRegionFactory.createFromAsset(textureAtlasIris, getAssets(), "gfx/iris_std.png", 0, 0);
-        }  else if (time.hour >= 13 && time.hour <= 16) {
+        } else if (time.hour >= 13 && time.hour <= 16) {
             mEyeTexture = BitmapTextureAtlasTextureRegionFactory.createFromAsset(textureAtlas, getAssets(), "gfx/purple.png", 0, 0);
             mIrisTexture = BitmapTextureAtlasTextureRegionFactory.createFromAsset(textureAtlasIris, getAssets(), "gfx/iris_std.png", 0, 0);
         } else if (time.hour >= 17 && time.hour <= 20) {
@@ -403,25 +424,14 @@ public class iSeeYouWallpaperService extends BaseLiveWallpaperService implements
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        float ratio=CAMERA_WIDTH/CAMERA_HEIGHT;
-        Log.e(TAG, "onConfigurationChanged: " );
-        // Checks the orientation of the screen
-        if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            /*mEyeSprite.setWidth(CAMERA_WIDTH * 1.1f);
-            mEyeSprite.setHeight(CAMERA_HEIGHT * 2);
-            mIrisSprite.setWidth(CAMERA_WIDTH * 0.073f);
-            mIrisSprite.setHeight(CAMERA_HEIGHT * 0.13f);*/
-            mEyeSprite.setWidth(ratio*2000);
-            mEyeSprite.setHeight(ratio*6250);
-            mIrisSprite.setWidth(ratio*140);
-            mIrisSprite.setHeight(ratio*450);
-            orient = 1;
-        } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
-            mEyeSprite.setWidth(ratio*3500);
-            mEyeSprite.setHeight(ratio*3500);
-            mIrisSprite.setWidth(ratio*250);
-            mIrisSprite.setHeight(ratio*250);
-            orient = 0;
+        float ratio = CAMERA_WIDTH / CAMERA_HEIGHT;
+
+        if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
+            orient=0;
+        }
+
+        else if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            orient=1;
         }
     }
 
@@ -434,7 +444,7 @@ public class iSeeYouWallpaperService extends BaseLiveWallpaperService implements
     public boolean onSceneTouchEvent(Scene pScene, TouchEvent pSceneTouchEvent) {
 
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
-        String pref_position = sharedPreferences.getString("positionListKey", "no selection");
+        String pref_position = sharedPreferences.getString("positionListKey", "2");
 
         int myEventAction = pSceneTouchEvent.getAction();
         MotionEvent event = pSceneTouchEvent.getMotionEvent();
@@ -446,18 +456,17 @@ public class iSeeYouWallpaperService extends BaseLiveWallpaperService implements
                     break;
                 case MotionEvent.ACTION_MOVE:
 
-
                     if (pref_position.equals("1")) {
                         if (orient == 0) {
-                            mIrisSprite.setPosition(((CAMERA_WIDTH / 2) + x / 8) - (mIrisSprite.getHeight() - 10) / 2, (CAMERA_HEIGHT - y / 14) - CAMERA_HEIGHT / 2 + (mIrisSprite.getHeight() - 10) / 2);
+                            mIrisSprite.setPosition(((CAMERA_WIDTH / 2) + x / 8) - (mIrisSprite.getHeight()) / 2, (CAMERA_HEIGHT - y / 14) - CAMERA_HEIGHT / 2 + (mIrisSprite.getHeight()) / 2);
                         } else if (orient == 1) {
-                            mIrisSprite.setPosition(((CAMERA_WIDTH / 2) + x / 18) - (mIrisSprite.getHeight() - 10) / 4, (CAMERA_HEIGHT - y / 4) - CAMERA_HEIGHT / 2 + (mIrisSprite.getHeight()) / 2);
+                            mIrisSprite.setPosition(((CAMERA_WIDTH / 2) + x / 14) - (mIrisSprite.getHeight()) / 2, (CAMERA_HEIGHT - y / 8) - CAMERA_HEIGHT / 2 + (mIrisSprite.getHeight()) / 2);
                         }
                     } else if (pref_position.equals("2")) {
                         if (orient == 0) {
-                            mIrisSprite.setPosition(((CAMERA_WIDTH / 2) + x / 8) - (mIrisSprite.getHeight() - 10) / 2, (CAMERA_HEIGHT - y / 14) - CAMERA_HEIGHT / 3f + (mIrisSprite.getHeight() - 10) / 2);
+                            mIrisSprite.setPosition(((CAMERA_WIDTH / 2) + x / 8) - (mIrisSprite.getHeight()) / 2, (CAMERA_HEIGHT - y / 14) - CAMERA_HEIGHT / 3f + (mIrisSprite.getHeight()) / 2);
                         } else if (orient == 1) {
-                            mIrisSprite.setPosition(((CAMERA_WIDTH / 2) + x / 20) - (mIrisSprite.getHeight() - 10) / 4, (CAMERA_HEIGHT - y / 4) - CAMERA_HEIGHT / 3f + (mIrisSprite.getHeight()) / 2);
+                            mIrisSprite.setPosition(((CAMERA_WIDTH / 2) + x / 14) - (mIrisSprite.getHeight()) / 2, (CAMERA_HEIGHT - y / 8) - CAMERA_HEIGHT / 3f + (mIrisSprite.getHeight()) / 2);
                         }
                     }
                     break;
@@ -475,10 +484,33 @@ public class iSeeYouWallpaperService extends BaseLiveWallpaperService implements
         return true;
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+
+//        mCamera.reset();
+
+        isManualSet = false;
+        PreferenceManager.getDefaultSharedPreferences(this).registerOnSharedPreferenceChangeListener(mPreferenceListener);
+    }
+
+    public class LiveWallpaperEngine extends BaseWallpaperGLEngine {
+
+        public LiveWallpaperEngine(IRendererListener pRendererListener) {
+            super(pRendererListener);
+        }
+
+        @Override
+        public void onTouchEvent(MotionEvent event) {
+            mEngine.onTouch(null, MotionEvent.obtain(event));
+        }
+    }
+
     private class PreferenceChangeListener implements SharedPreferences.OnSharedPreferenceChangeListener {
 
         @Override
         public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
+
 
             SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
             String pref_position = sharedPreferences.getString("positionListKey", "no selection");
